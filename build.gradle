@@ -1,0 +1,125 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven/'
+        }
+        maven {
+            name = 'oss-sonatype-public'
+            url = 'https://oss.sonatype.org/content/repositories/public/'
+        }
+        maven {
+            url = 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
+        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
+    }
+}
+
+// Load MalisisCore Gradle project first
+evaluationDependsOn ':MalisisCore'
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.github.hierynomus.license'
+
+defaultTasks 'clean', 'licenseFormat', 'build'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+archivesBaseName = project.name.toLowerCase().replace(' ', '_')
+version = "${project.minecraftVersion}-${project.forgeBuild}"
+
+minecraft {
+    version = "${project.forgeVersion}"
+    mappings = project.mcpMappings
+    runDir = 'run'
+    useDepAts = true
+
+    atSource project(':MalisisCore').sourceSets.main
+
+    // We don't use the obfuscated dev jar currently
+    makeObfSourceJar = false
+}
+
+deobfMcMCP { failOnAtError = false }
+deobfMcSRG { failOnAtError = false }
+
+repositories {
+	mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'forge'
+        url = 'http://files.minecraftforge.net/maven/'
+    }
+    maven {
+        name = 'oss-sonatype-public'
+        url = 'https://oss.sonatype.org/content/repositories/public/'
+    }
+}
+
+// Fix conflicts with HOCON library (SF requires 1.3.0)
+configurations.all {
+    resolutionStrategy {
+        force 'com.typesafe:config:1.3.1'
+    }
+}
+
+dependencies {
+    compile 'ninja.leaping.configurate:configurate-json:3.3'
+    compile project(':MalisisCore')
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
+license {
+    ext.name = project.name
+    ext.organization = project.organization
+    ext.url = project.url
+    header rootProject.file('HEADER.txt')
+    ignoreFailures true
+    strictCheck true
+    include '**/*.java'
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {
+    tasks.withType(Javadoc) {
+        // disable the crazy super-strict doclint tool in Java 8
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+compileJava {
+    options.compilerArgs += [
+            '-Xlint:-processing',
+    ]
+    options.deprecation = true
+    options.encoding = 'utf8'
+}
+
+jar {
+    classifier 'base'
+
+    manifest {
+        attributes(
+                'Built-By': System.properties['user.name'],
+                'Created-By': System.properties['java.vm.version'] + ' (' + System.properties['java.vm.vendor'] + ')',
+                'Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Implementation-Vendor': url
+        )
+    }
+}

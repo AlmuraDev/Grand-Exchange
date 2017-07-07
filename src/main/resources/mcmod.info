@@ -1,0 +1,16 @@
+[
+    {
+        "modid": "ge",
+        "name": "Grand Exchange",
+        "description": "Foo Bar",
+        "version": "1.12-2397",
+        "credits": "Copyright (C) AlmuraDev and contributors",
+        "logoFile": "/assets/ge/textures/gui/ge_logo.png",
+        "mcversion": "1.12",
+        "url": "http://almuramc.com",
+        "updateUrl": "",
+        "authorList": [ "AlmuraDev" ],
+        "parent": "",
+        "screenshots": []
+    }
+]
