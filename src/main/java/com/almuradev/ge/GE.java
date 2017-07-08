@@ -7,6 +7,8 @@ package com.almuradev.ge;
 
 import com.almuradev.ge.util.Storage;
 import com.google.inject.Inject;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
@@ -25,10 +27,13 @@ public class GE {
     @Inject private Logger logger;
     @DefaultConfig(sharedRoot = true)
     @Inject private File configuration;
+    @DefaultConfig(sharedRoot = true)
+    @Inject private ConfigurationLoader<CommentedConfigurationNode> loader;
 
     @Listener
     public void onGameConstruction(GameConstructionEvent event) {
         INSTANCE = this;
+        this.storage = new Storage(this.container, this.configuration, this.loader);
     }
 
     public final Logger getLogger() {
