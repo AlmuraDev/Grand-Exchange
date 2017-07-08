@@ -11,6 +11,10 @@ buildscript {
             url = 'https://oss.sonatype.org/content/repositories/public/'
         }
         maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
+        maven {
             url = 'https://plugins.gradle.org/m2/'
         }
     }
@@ -20,9 +24,6 @@ buildscript {
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
     }
 }
-
-// Load MalisisCore Gradle project first
-evaluationDependsOn ':MalisisCore'
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -42,8 +43,6 @@ minecraft {
     runDir = 'run'
     useDepAts = true
 
-    atSource project(':MalisisCore').sourceSets.main
-
     // We don't use the obfuscated dev jar currently
     makeObfSourceJar = false
 }
@@ -62,6 +61,10 @@ repositories {
         name = 'oss-sonatype-public'
         url = 'https://oss.sonatype.org/content/repositories/public/'
     }
+    maven {
+        name = 'sponge'
+        url = 'http://repo.spongepowered.org/maven'
+    }
 }
 
 configurations.all {
@@ -71,8 +74,9 @@ configurations.all {
 }
 
 dependencies {
+    compile "org.spongepowered:spongeapi:${project.spongeAPIVersion}"
+    compile 'net.malisis:malisiscore:1.12+'
     compile 'ninja.leaping.configurate:configurate-hocon:3.3'
-    compile project(':MalisisCore')
 }
 
 idea {
