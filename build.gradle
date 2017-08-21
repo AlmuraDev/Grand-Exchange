@@ -75,6 +75,10 @@ configurations.all {
 
 dependencies {
     compile "org.spongepowered:spongeapi:${project.spongeAPIVersion}"
+    compile 'org.jooq:jooq:3.9.4'
+    compile 'org.jooq:jooq-meta:3.9.4'
+    compile 'org.jooq:jooq-codegen:3.9.4'
+    compile 'mysql:mysql-connector-java:8.0.7-dmr'
     compile 'net.malisis:malisiscore:1.12+'
     compile 'ninja.leaping.configurate:configurate-hocon:3.3'
 }

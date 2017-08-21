@@ -5,46 +5,42 @@
  */
 package com.almuradev.ge;
 
-import com.almuradev.ge.util.Storage;
 import com.google.inject.Inject;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.slf4j.Logger;
-import org.spongepowered.api.config.DefaultConfig;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
 
-import java.io.File;
-
-@Plugin(id = Constants.Plugin.ID, name = Constants.Plugin.NAME, version = Constants.Plugin.VERSION, description = Constants.Plugin.DESCRIPTION)
+@Mod(modid = Constants.Plugin.ID, name = Constants.Plugin.NAME, version = Constants.Plugin.VERSION)
 public class GE {
 
+    @Mod.Instance
     public static GE INSTANCE;
-    private Storage storage;
-    @Inject private PluginContainer container;
-    @Inject private Logger logger;
-    @DefaultConfig(sharedRoot = true)
-    @Inject private File configuration;
-    @DefaultConfig(sharedRoot = true)
-    @Inject private ConfigurationLoader<CommentedConfigurationNode> loader;
 
-    @Listener
-    public void onGameConstruction(GameConstructionEvent event) {
-        INSTANCE = this;
-        this.storage = new Storage(this.container, this.configuration, this.loader);
+    @SidedProxy(clientSide = Constants.Plugin.PROXY_CLIENT_CLASSPATH, serverSide = Constants.Plugin.PROXY_SERVER_CLASSPATH)
+    public static CommonProxy proxy;
+
+    @Inject
+    private Logger logger;
+
+    @Mod.EventHandler
+    public void onConstruction(FMLConstructionEvent event) {
+        this.proxy.onConstruction(event);
+    }
+
+    @Mod.EventHandler
+    public void onPreInitialization(FMLPreInitializationEvent event) {
+        this.proxy.onPreInitialization(event);
+    }
+
+    @Mod.EventHandler
+    public void onInitialization(FMLInitializationEvent event) {
+        this.proxy.onInitialization(event);
     }
 
     public final Logger getLogger() {
         return this.logger;
-    }
-
-    public final Storage getStorage() {
-        return this.storage;
-    }
-
-    public final PluginContainer getContainer() {
-        return this.container;
     }
 }
